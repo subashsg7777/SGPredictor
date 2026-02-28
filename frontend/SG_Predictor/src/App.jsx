@@ -13,6 +13,9 @@ const FALLBACK_SYMBOLS = [
   'KOTAKBANK.NS',
 ]
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/+$/, '')
+const apiUrl = (path) => `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`
+
 function App() {
   const [symbols, setSymbols] = useState([])
   const [selectedSymbol, setSelectedSymbol] = useState('')
@@ -27,7 +30,7 @@ function App() {
 
     const loadSymbols = async () => {
       try {
-        const response = await fetch('/api/stocks/symbols')
+        const response = await fetch(apiUrl('/api/stocks/symbols'))
         if (!response.ok) {
           throw new Error('Failed to fetch symbols from backend')
         }
@@ -95,7 +98,7 @@ function App() {
 
   const fetchLivePrice = async (symbol) => {
     const backendResponse = await fetch(
-      `/api/stocks/price?symbol=${encodeURIComponent(symbol)}`,
+      apiUrl(`/api/stocks/price?symbol=${encodeURIComponent(symbol)}`),
     )
     const backendPayload = await backendResponse.json().catch(() => ({}))
 
@@ -143,7 +146,7 @@ function App() {
       console.log('Token attached for /api/predict request')
 
       // sending an prediction request along with token 
-      const predictionResponse = await fetch(`/api/predict?symbol=${selectedSymbol}&direction=${side} `, {
+      const predictionResponse = await fetch(apiUrl(`/api/predict?symbol=${selectedSymbol}&direction=${side}`), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
