@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Login from './Login'
 
 const FALLBACK_SYMBOLS = [
   'RELIANCE.NS',
@@ -17,6 +18,10 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\
 const apiUrl = (path) => `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const t = localStorage.getItem('token')
+    return !!(t && t.trim())
+  })
   const [symbols, setSymbols] = useState([])
   const [selectedSymbol, setSelectedSymbol] = useState('')
   const [side, setSide] = useState('BUY')
@@ -24,6 +29,10 @@ function App() {
   const [loadingPrice, setLoadingPrice] = useState(false)
   const[responseData, setResponseData] = useState({})
   const [prediction,setPrediction] = useState(false)
+
+  if (!isLoggedIn) {
+    return <Login onLogin={() => setIsLoggedIn(true)} />
+  }
   const getAuthHeader = () => {
     const rawToken = localStorage.getItem('token') || ''
     if (!rawToken || rawToken.trim() === '') return {}
