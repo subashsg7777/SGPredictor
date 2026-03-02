@@ -24,13 +24,19 @@ function App() {
   const [loadingPrice, setLoadingPrice] = useState(false)
   const[responseData, setResponseData] = useState({})
   const [prediction,setPrediction] = useState(false)
+  const getAuthHeader = () => {
+    const rawToken = localStorage.getItem('token') || ''
+    if (!rawToken || rawToken.trim() === '') return {}
+    const token = rawToken.trim().startsWith('Bearer ') ? rawToken.trim() : `Bearer ${rawToken.trim()}`
+    return { Authorization: token }
+  }
 
   useEffect(() => {
     let isMounted = true
 
     const loadSymbols = async () => {
       try {
-        const response = await fetch(apiUrl('/api/stocks/symbols'))
+        const response = await fetch(apiUrl('/api/stocks/symbols'), { headers: { ...getAuthHeader() } })
         if (!response.ok) {
           throw new Error('Failed to fetch symbols from backend')
         }
@@ -99,6 +105,7 @@ function App() {
   const fetchLivePrice = async (symbol) => {
     const backendResponse = await fetch(
       apiUrl(`/api/stocks/price?symbol=${encodeURIComponent(symbol)}`),
+      { headers: { ...getAuthHeader() } },
     )
     const backendPayload = await backendResponse.json().catch(() => ({}))
 
