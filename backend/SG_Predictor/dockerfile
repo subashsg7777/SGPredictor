@@ -5,15 +5,15 @@ FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /app
 
-# Copy only what is needed for dependency resolution first
+# Copy Maven wrapper and config
 COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
 
-# Ensure the Maven wrapper is executable (fixes permission/line-ending issues)
-RUN chmod +x ./mvnw || true
+# Ensure wrapper is executable (safety)
+RUN chmod +x mvnw
 
-# Download dependencies (cached layer)
+# Download dependencies (cached)
 RUN ./mvnw dependency:go-offline -B
 
 # Copy source and build
@@ -27,49 +27,9 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-# Copy only the final jar
 COPY --from=builder /app/target/*.jar app.jar
 
-# Render uses PORT env variable
 ENV PORT=8080
-
 EXPOSE 8080
 
-# JVM optimizations for containers
-ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
-# ==============================
-# Build stage
-# ==============================
-FROM eclipse-temurin:21-jdk AS builder
-
-WORKDIR /app
-
-# Copy only what is needed for dependency resolution first
-COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
-
-# Download dependencies (cached layer)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source and build
-COPY src src
-RUN ./mvnw clean package -DskipTests
-
-# ==============================
-# Runtime stage
-# ==============================
-FROM eclipse-temurin:21-jre
-
-WORKDIR /app
-
-# Copy only the final jar
-COPY --from=builder /app/target/*.jar app.jar
-
-# Render uses PORT env variable
-ENV PORT=8080
-
-EXPOSE 8080
-
-# JVM optimizations for containers
 ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
