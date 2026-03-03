@@ -73,11 +73,11 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public OffsetDateTime getUpdateAt() {
+    public LocalDateTime getUpdateAt() {
         return updateAt;
     }
 
-    public void setUpdateAt(OffsetDateTime updateAt) {
+    public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
     }
 }
