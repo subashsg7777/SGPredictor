@@ -1,5 +1,8 @@
 package com.SG_Predictor.SG_Predictor.stocks.entity;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -26,8 +29,8 @@ public class User {
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT now()")
     private OffsetDateTime createdAt;
 
-    @Column(name = "update_at", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE DEFAULT now()")
-    private OffsetDateTime updateAt;
+    @Column(name = "update_at")
+    private LocalDateTime updateAt;
 
     // Constructors
     public User() {}
