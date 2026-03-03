@@ -36,7 +36,7 @@ public class PredictionController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(loginResDto);
     }
 
-    @PostMapping("predict")
+    @PostMapping("/predict")
     public PredictResDto riskPrediction(@Validated @NotBlank @RequestParam String symbol,@Validated @NotBlank @RequestParam String direction){
         log.info("Sending Traffic to Python Model");
 
