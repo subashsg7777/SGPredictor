@@ -2,6 +2,7 @@ package com.SG_Predictor.SG_Predictor.config;
 
 import com.SG_Predictor.SG_Predictor.security.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,12 +20,14 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        log.info("[STARTUP] Configuring Security: /api/predict requires authentication, /api/login and /api/stocks/** are public");
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())

@@ -26,11 +26,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String requestPath = request.getRequestURI();
+        final String method = request.getMethod();
 
-        if (requestPath != null && requestPath.startsWith("/api/predict")) {
-            log.info("Spring hit: {} {} (Authorization header present: {})",
-                    request.getMethod(), requestPath, authHeader != null && !authHeader.isBlank());
-        }
+        // Log ALL incoming requests to confirm traffic is reaching Spring
+        log.info("[REQUEST] {} {} | Auth header present: {} | Remote: {}",
+                method, requestPath,
+                authHeader != null && !authHeader.isBlank(),
+                request.getRemoteAddr());
 
         String username = null;
         String jwt = null;
@@ -46,12 +48,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, Collections.emptyList());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    log.info("[AUTH] JWT validated successfully for user: {}", username);
                 }
             } catch (Exception e){
-                log.warn("JWT validation failed for {} {}: {}", request.getMethod(), requestPath, e.getMessage());
+                log.warn("[AUTH] JWT validation failed for {} {}: {}", method, requestPath, e.getMessage());
                 // token parsing/validation failed — leave context unauthenticated
             }
         }
-            filterChain.doFilter(request,response);
+        filterChain.doFilter(request,response);
     }
 }
