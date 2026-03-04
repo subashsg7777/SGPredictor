@@ -1,5 +1,6 @@
 package com.SG_Predictor.SG_Predictor.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -7,8 +8,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
+    @Value("${ml.service.base-url:http://localhost:8000}")
+    private String mlServiceBaseUrl;
+
     @Bean
     public WebClient mlWebClient(){
-        return WebClient.builder().baseUrl("http://localhost:8000").build();
+        return WebClient.builder().baseUrl(mlServiceBaseUrl).build();
     }
 }
