@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalTime;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -36,8 +37,14 @@ public class PredictionController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(loginResDto);
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        log.info("Test endpoint hit: GET /api/test");
+        return ResponseEntity.ok("Backend is reachable");
+    }
+
     @PostMapping("/predict")
-    public PredictResDto riskPrediction(@Validated @NotBlank @RequestParam String symbol,@Validated @NotBlank @RequestParam String direction){
+    public PredictResDto riskPrediction(@NotBlank @RequestParam String symbol, @NotBlank @RequestParam String direction){
         log.info("Spring controller reached: POST /api/predict with symbol={} direction={}", symbol, direction);
         log.info("Sending traffic to Python Model");
 

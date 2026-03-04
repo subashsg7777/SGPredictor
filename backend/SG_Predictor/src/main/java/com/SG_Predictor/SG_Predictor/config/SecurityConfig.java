@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/login", "/login").permitAll()
                         .requestMatchers("/api/stocks/**").permitAll()
+                        .requestMatchers("/api/test").permitAll()
                         .requestMatchers("/api/predict").authenticated()
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable);
