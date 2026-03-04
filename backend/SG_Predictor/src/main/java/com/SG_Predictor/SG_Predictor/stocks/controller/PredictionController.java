@@ -38,7 +38,8 @@ public class PredictionController {
 
     @PostMapping("/predict")
     public PredictResDto riskPrediction(@Validated @NotBlank @RequestParam String symbol,@Validated @NotBlank @RequestParam String direction){
-        log.info("Sending Traffic to Python Model");
+        log.info("Spring controller reached: POST /api/predict with symbol={} direction={}", symbol, direction);
+        log.info("Sending traffic to Python Model");
 
         LocalTime tradeTime = LocalTime.now();
 

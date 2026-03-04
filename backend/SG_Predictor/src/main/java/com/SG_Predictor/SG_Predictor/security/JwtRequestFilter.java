@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -16,6 +17,7 @@ import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
@@ -23,6 +25,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
+        final String requestPath = request.getRequestURI();
+
+        if (requestPath != null && requestPath.startsWith("/api/predict")) {
+            log.info("Spring hit: {} {} (Authorization header present: {})",
+                    request.getMethod(), requestPath, authHeader != null && !authHeader.isBlank());
+        }
 
         String username = null;
         String jwt = null;
@@ -40,6 +48,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             } catch (Exception e){
+                log.warn("JWT validation failed for {} {}: {}", request.getMethod(), requestPath, e.getMessage());
                 // token parsing/validation failed — leave context unauthenticated
             }
         }
